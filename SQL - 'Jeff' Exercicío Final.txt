@@ -1,0 +1,155 @@
+create database JeffersonFelix
+
+use JeffersonFelix
+
+CREATE TABLE departamento(
+
+  cod int identity(1,1) PRIMARY KEY,
+  nome varchar(255) NOT NULL,
+  localizacao varchar(255) NOT NULL
+
+);
+
+CREATE TABLE funcao(
+
+  cod int identity(1,1) PRIMARY KEY,
+  nome varchar(255) NOT NULL
+
+);
+
+CREATE TABLE funcionario(
+
+  cod int identity(1,1) PRIMARY KEY,
+  primeiro_nome varchar(255) NOT NULL,
+  segundo_nome varchar(255),
+  ultimo_nome varchar(255) NOT NULL,
+  data_nasc date NOT NULL,
+  cpf varchar(255),
+  rg varchar(255),
+  endereco varchar(255),
+  cep varchar(8),
+  cidade varchar(255) NOT NULL,
+  fone varchar(12) NOT NULL,
+  cod_dep int NOT NULL,
+  cod_funcao int NOT NULL,
+  salario decimal(19,2) NOT NULL,
+  FOREIGN KEY (cod_dep) REFERENCES departamento(cod),
+  FOREIGN KEY (cod_funcao) REFERENCES funcao(cod)
+
+);
+
+INSERT INTO departamento (nome, localizacao) VALUES
+
+('administracao', 'mogi mirim'),
+('seguranca', 'mogi mirim'),
+('tecnologia', 'mogi mirim'),
+('qualidade', 'mogi mirim'),
+('pessoal', 'mogi mirim'),
+('financeiro', 'mogi mirim'),
+('engenharia', 'mogi mirim'),
+('producao', 'conchal'),
+('limpeza', 'conchal'),
+('pessoal', 'conchal');
+
+INSERT INTO funcao (nome) VALUES
+('producao'),
+('vendedor'),
+('analista'),
+('gerente'),
+('atendente'),
+('seguranca'),
+('pedreiro'),
+('engenheiro'),
+('secretaria'),
+('supervisor');
+
+INSERT INTO funcionario (primeiro_nome, ultimo_nome, data_nasc, cidade, fone, cod_dep, cod_funcao, salario) VALUES
+('Jefferson', 'Felix', '2022-11-01', 'mogi mirim', '3881-2525', 1, 1, 1600),
+('Bryan', 'Felix', '2022-11-02', 'mogi mirim', '3881-2456', 2, 1, 1700),
+('Yan', 'Felix', '2022-11-11', 'mogi mirim', '3881-3356', 2, 10, 1600),
+('Luan', 'Felix', '2022-11-03', 'mogi mirim', '3881-9746', 3, 1, 1700),
+('Danilo', 'Felix', '2022-11-04', 'mogi mirim', '3881-0001', 4, 1, 1900),
+('Paulo', 'Felix', '2022-11-05', 'mogi mirim', '3881-3846', 5, 1, 2000),
+('Rodrigo', 'Felix', '2022-11-06', 'mogi mirim', '3882-7591', 6, 1, 2300),
+('Lucas', 'Felix', '2022-11-06', 'mogi mirim', '3882-6630', 6, 10, 2300),
+('Juliana', 'Felix', '2022-11-07', 'mogi mirim', '3882-1234', 7, 1, 2300),
+('Julia', 'Felix', '2022-11-08', 'mogi mirim', '3882-9874', 8, 1, 2500),
+('Beatriz', 'Felix', '2022-11-09', 'mogi mirim', '3882-5885', 9, 1, 2500),
+('Laura', 'Felix', '2022-11-12', 'mogi mirim', '3882-9946', 9, 2, 2600),
+('Kethelyn', 'Felix', '2022-11-13', 'mogi mirim', '3882-3396', 10, 2, 2600),
+('Jonatas', 'Felix', '2022-11-13', 'conchal', '3882-0201', 10, 2, 2700),
+('Kleber', 'Felix', '2022-11-13', 'conchal', '3882-7755', 10, 10, 2700),
+('Tomas', 'Felix', '2022-11-10', 'conchal', '3362-3546', 10, 2, 2600);
+
+				-- EX1--
+SELECT primeiro_nome, ultimo_nome from funcionario ORDER BY ultimo_nome ASC;
+
+				-- EX2--
+SELECT * FROM funcionario ORDER BY cidade ASC
+
+				-- EX3--
+SELECT * FROM funcionario WHERE salario > 1000 ORDER BY primeiro_nome ASC;
+
+				-- EX4--
+SELECT primeiro_nome, data_nasc FROM funcionario ORDER BY data_nasc DESC;
+
+				-- EX5--
+SELECT primeiro_nome, ultimo_nome, fone from funcionario ORDER BY primeiro_nome ASC;
+
+				-- EX6--
+SELECT SUM(salario) as total_pagamento from funcionario;
+
+				-- EX7--
+SELECT funcionario.primeiro_nome, funcionario.ultimo_nome, departamento.nome as nome_dep, funcao.nome as nome_funcao
+from funcionario
+INNER JOIN departamento ON (funcionario.cod_dep = departamento.cod)
+INNER JOIN funcao ON (funcionario.cod_funcao = funcao.cod);
+
+				-- EX8--
+SELECT departamento.nome, funcionario.primeiro_nome AS gerente 
+FROM departamento 
+INNER JOIN funcionario ON (departamento.cod = funcionario.cod_dep);
+
+				-- EX9--
+SELECT SUM(f.salario) as total_pagamento, d.nome
+from funcionario f
+INNER JOIN departamento d ON (cod_dep = d.cod) GROUP BY d.nome;
+
+				-- EX10--
+SELECT departamento.nome
+FROM departamento
+INNER JOIN funcionario on (departamento.cod = funcionario.cod_dep)
+WHERE  funcionario . cod_funcao  =  10
+GROUP by  departamento . nome ;
+
+				-- EX11--
+SELECT  COUNT ( * ) FROM funcionario;
+
+				-- EX12--
+SELECT AVG(salario) from funcionario;
+
+				-- EX13--
+SELECT MIN(funcionario.salario) as menor_salario, departamento.nome AS departamento
+from funcionario
+INNER JOIN departamento on (funcionario.cod = departamento.cod) GROUP BY departamento.nome;
+
+				-- EX14--
+SELECT primeiro_nome, ultimo_nome from funcionario WHERE segundo_nome IS NULL;
+				
+				-- EX15--
+SELECT funcionario.primeiro_nome, departamento.nome AS nome_departamento
+from funcionario
+INNER JOIN departamento ON (funcionario.cod = departamento.cod)
+ORDER BY funcionario.primeiro_nome ASC, departamento.nome ASC;
+				
+				-- EX16--
+SELECT funcionario.primeiro_nome, funcao.nome AS nome_funcao
+from funcionario
+INNER JOIN funcao ON (funcionario.cod_funcao = funcao.cod)
+WHERE funcao.nome = 'financeiro' AND funcionario.cidade = 'conchal';
+				
+				-- EX17--
+SELECT funcionario.primeiro_nome, departamento.nome
+from funcionario
+INNER JOIN departamento ON (funcionario.cod_dep = departamento.cod)
+WHERE departamento.nome = 'pessoal';
